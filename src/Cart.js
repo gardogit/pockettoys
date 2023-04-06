@@ -2,8 +2,18 @@ import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from './CartContext';
 
 function Cart() {
-  const { cart, updateCartItem, removeFromCart } = useContext(CartContext);
+  const {
+    cart,
+    updateCartItem,
+    removeFromCart,
+    loadingItemId,
+    setLoadingItemId,
+    cartChanged,
+    setCartChanged,
+    fetchCart,
+  } = useContext(CartContext);
   const [quantities, setQuantities] = useState({});
+  const [removingItemId, setRemovingItemId] = useState(null);
 
   useEffect(() => {
     if (cart && Array.isArray(cart.line_items)) {
@@ -15,20 +25,38 @@ function Cart() {
     }
   }, [cart]);
 
+  useEffect(() => {
+    if (cartChanged) {
+      fetchCart();
+      setCartChanged(false);
+    }
+  }, [cartChanged]);
+
   const handleQuantityChange = (itemId, newQuantity) => {
     setQuantities({ ...quantities, [itemId]: newQuantity });
   };
 
-  const handleAddToCart = async (itemId) => {
+  const handleDecreaseQuantity = async (itemId) => {
+    if (quantities[itemId] === 1) {
+      setLoadingItemId(itemId);
+      await removeFromCart(itemId);
+    } else {
+      const updatedQuantity = quantities[itemId] - 1;
+      handleQuantityChange(itemId, updatedQuantity);
+      updateCartItem(itemId, updatedQuantity);
+    }
+  };
+
+  const handleIncreaseQuantity = (itemId) => {
     const updatedQuantity = quantities[itemId] + 1;
     handleQuantityChange(itemId, updatedQuantity);
-    await updateCartItem(itemId, updatedQuantity);
+    updateCartItem(itemId, updatedQuantity);
   };
 
   const handleRemoveFromCart = async (itemId) => {
-    const updatedQuantity = quantities[itemId] - 1;
-    handleQuantityChange(itemId, updatedQuantity);
-    await updateCartItem(itemId, updatedQuantity);
+    setRemovingItemId(itemId);
+    await removeFromCart(itemId);
+    setCartChanged(true);
   };
 
   if (!cart || !Array.isArray(cart.line_items)) {
@@ -43,10 +71,14 @@ function Cart() {
           <img src={item.image.url} alt={item.name} />
           <h2>{item.name}</h2>
           <p>{item.price.formatted_with_symbol}</p>
-          <button onClick={() => handleRemoveFromCart(item.id)}>-</button>
+          <button onClick={() => handleDecreaseQuantity(item.id)}>-</button>
           <span>{quantities[item.id]}</span>
-          <button onClick={() => handleAddToCart(item.id)}>+</button>
-          <button onClick={() => removeFromCart(item.id)}>Eliminar</button>
+          <button onClick={() => handleIncreaseQuantity(item.id)}>+</button>
+          {removingItemId === item.id ? (
+            <span>Eliminando producto...</span>
+          ) : (
+            <button onClick={() => handleRemoveFromCart(item.id)}>Eliminar</button>
+          )}
         </div>
       ))}
       {cart.line_items.length === 0 && <p>No hay productos en el carrito</p>}

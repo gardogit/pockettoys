@@ -5,7 +5,8 @@ import { CartContext } from '../CartContext';
 
 function ProductList() {
   const [products, setProducts] = useState([]);
-  const { addToCart } = useContext(CartContext);
+  const { cart, addToCart, fetchCart } = useContext(CartContext);
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -14,6 +15,13 @@ function ProductList() {
     const response = await commerce.products.list();
     setProducts(response.data);
   };
+
+  const handleAddToCart = async (productId) => {
+    const response = await addToCart(productId, 1);
+    if (response) {
+      fetchCart();
+    }
+  };  
 
   return (
     <div>
@@ -25,8 +33,7 @@ function ProductList() {
                 <img src={product.image.url} alt={product.name} />
                 <Link to={`/product/${product.id}`}><h2>{product.name}</h2></Link>
               <p>{product.price.formatted_with_symbol}</p>
-              <button onClick={() => addToCart(product.id, 1)}>Agregar al carrito</button>
-              {/* Aquí puedes agregar un botón para agregar el producto al carrito */}
+              <button onClick={() => handleAddToCart(product.id)}>Agregar al carrito</button>
             </div>
           ))
         ) : (

@@ -1,16 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import commerce from '../commerce';
 import { CartContext } from '../CartContext';
-import { useNavigate } from 'react-router-dom';
+import { Card, Container, Row, Col, Button, Form } from 'react-bootstrap';
 
 function ProductDetail() {
   const [product, setProduct] = useState(null);
   const { productId } = useParams();
-  console.log('Product ID:', productId);
   const { addToCart, fetchCart } = useContext(CartContext);
-  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -21,24 +20,16 @@ function ProductDetail() {
         console.error('Error fetching product:', error);
       }
     }
-
     fetchProduct();
   }, [productId]);
 
   const handleAddToCart = async (productId) => {
-    console.log('Adding product to cart with ID:', productId, 'and quantity:', quantity);
-    try {
-      const response = await addToCart(productId, quantity);
-      console.log('handleAddToCart response:', response); // Agrega esta línea
-      if (response) {
-        fetchCart();
-      }
-    } catch (error) {
-      console.error("Error data:", error.data);      
-    }
-  };  
-  
-  const handleQuantityChange = (event) => {
+    await addToCart(productId, quantity);
+    fetchCart();
+    navigate('/precarrito');
+  };
+
+  const handleChange = (event) => {
     setQuantity(parseInt(event.target.value));
   };
 
@@ -47,31 +38,43 @@ function ProductDetail() {
   }
 
   return (
-    <div>
-      <img src={product.image.url} alt={product.name} />
-      <h1>{product.name}</h1>
-      <div
-        className="product-description"
-        dangerouslySetInnerHTML={{ __html: product.description }}
-      />
-      <p>Price: {product.price.formatted_with_symbol}</p>
-      <div>
-        <label htmlFor="quantity">Cantidad:</label>
-        <select
-          id="quantity"
-          value={quantity}
-          onChange={handleQuantityChange}
-        >
-          {[1, 2, 3, 4, 5, 6].map((value) => (
-            <option key={value} value={value}>
-              {value} unidad{value > 1 ? 'es' : ''}
-            </option>
-          ))}
-        </select>
-        <span> (Stock: {product.inventory.available})</span>
-      </div>
-      <button onClick={() => handleAddToCart(productId)}>Agregar al carrito</button>
-    </div>
+    <Container>
+      <Row>
+        <Col xs={12} md={6}>
+          <Card.Img src={product.image.url} alt={product.name} />
+        </Col>
+        <Col xs={12} md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title>{product.name}</Card.Title>
+              <Card.Text
+                className="product-description"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
+              <Card.Text>Price: {product.price.formatted_with_symbol}</Card.Text>
+              <Form.Group controlId="quantity">
+                <Form.Label>Cantidad:</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={quantity}
+                  onChange={handleChange}
+                >
+                  {[1, 2, 3, 4, 5, 6].map((value) => (
+                    <option key={value} value={value}>
+                      {value} unidad{value > 1 ? 'es' : ''}
+                    </option>
+                  ))}
+                </Form.Control>
+                <span> (Stock: {product.inventory.available})</span>
+              </Form.Group>
+              <Button onClick={() => handleAddToCart(productId)}>
+                Agregar al carrito
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

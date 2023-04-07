@@ -1,12 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react';
+// ProductList.js
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import commerce from '../commerce';
-import { CartContext } from '../CartContext';
+import { Card, CardDeck, Container, Row, Col } from 'react-bootstrap';
 
 function ProductList() {
   const [products, setProducts] = useState([]);
-  const { cart, addToCart, fetchCart } = useContext(CartContext);
-  
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -16,31 +16,40 @@ function ProductList() {
     setProducts(response.data);
   };
 
-  const handleAddToCart = async (productId) => {
-    const response = await addToCart(productId, 1);
-    if (response) {
-      fetchCart();
-    }
-  };  
-
   return (
-    <div>
+    <Container>
       <h1>Productos</h1>
-      <div>
+      <Row>
         {products.length > 0 ? (
           products.map((product) => (
-            <div key={product.id}>
-                <img src={product.image.url} alt={product.name} />
-                <Link to={`/product/${product.id}`}><h2>{product.name}</h2></Link>
-              <p>{product.price.formatted_with_symbol}</p>
-              <button onClick={() => handleAddToCart(product.id)}>Agregar al carrito</button>
-            </div>
+            <Col xs={12} sm={6} md={4} lg={3} key={product.id}>
+              <Card className="product-card mb-4">
+                <Link to={`/product/${product.id}`} className="text-decoration-none">
+                  <Card.Img
+                    variant="top"
+                    src={product.image.url}
+                    alt={product.name}
+                    style={{ height: '210px', objectFit: 'cover'}}
+                  />
+                  <hr style={{ borderTop: '1px solid #EBEBEB', margin: '0' }} />
+                  <Card.Body>
+                    <Card.Title className="mb-2" style={{ fontSize: '24px', color: '#484349' }}>
+                      {product.price.formatted_with_symbol}
+                    </Card.Title>
+                    <Card.Text style={{ fontSize: '14px', color: '#484349' }}>
+                      {product.name}
+                    </Card.Text>
+                  </Card.Body>
+                </Link>
+              </Card>
+            </Col>
           ))
         ) : (
           <p>Cargando productos...</p>
         )}
-      </div>
-    </div>
+      </Row>
+    </Container>
+    
   );
 }
 

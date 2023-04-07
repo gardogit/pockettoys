@@ -1,43 +1,67 @@
+//CartContext.js
 import { createContext, useState, useEffect } from 'react';
 import commerce from './commerce';
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState(null);
+  const [cart, setCart] = useState(() => {
+    const localData = localStorage.getItem('cart');
+    return localData ? JSON.parse(localData) : null;
+  });
   const [loadingItemId, setLoadingItemId] = useState(null);
   const [cartChanged, setCartChanged] = useState(false);
+  const [lastAddedItem, setLastAddedItem] = useState(() => {
+    const localData = localStorage.getItem('lastAddedItem');
+    return localData ? JSON.parse(localData) : null;
+  });
 
   useEffect(() => {
-    fetchCart();
-  }, []);
+    if (!cart) {
+      fetchCart();
+    }
+  }, [cart]);
 
   const fetchCart = async () => {
     const response = await commerce.cart.retrieve();
-    setCart(response);
+    setCartAndSave(response);
+    setCartChanged(false);
+  };
+
+  const setCartAndSave = (newCart) => {
+    localStorage.setItem('cart', JSON.stringify(newCart));
+    setCart(newCart);
   };
 
   const addToCart = async (productId, quantity) => {
-    const response = await commerce.cart.add(productId, quantity);
-    console.log("productId:", productId, "quantity:", quantity);
-    setCart(response.cart);
-    setCartChanged(true);
+    try {
+      const response = await commerce.cart.add(productId, quantity);
+      setCartAndSave(response);
+      const lastItem = response.line_items.find(item => item.product_id === productId);
+      setLastAddedItemAndSave(lastItem);
+    } catch (error) {
+    }
+  };
+
+  const setLastAddedItemAndSave = (newLastAddedItem) => {
+    localStorage.setItem('lastAddedItem', JSON.stringify(newLastAddedItem));
+    setLastAddedItem(newLastAddedItem);
   };
 
   const updateCartItem = async (itemId, quantity) => {
-    await commerce.cart.update(itemId, { quantity });
-    fetchCart();
+    const response = await commerce.cart.update(itemId, { quantity });
+    setCartAndSave(response);
     setCartChanged(true);
   };
 
   const removeFromCart = async (itemId) => {
-    await commerce.cart.remove(itemId);
-    fetchCart();
+    const response = await commerce.cart.remove(itemId);
+    setCartAndSave(response);
   };
 
   const emptyCart = async () => {
     const response = await commerce.cart.empty();
-    setCart(response.cart);
+    setCartAndSave(response.cart);
     setCartChanged(true);
   };
 
@@ -54,9 +78,11 @@ export const CartProvider = ({ children }) => {
         cartChanged,
         setCartChanged,
         fetchCart,
+        lastAddedItem,
       }}
     >
       {children}
     </CartContext.Provider>
   );
 };
+

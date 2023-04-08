@@ -12,8 +12,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
   }
+
+  .text-lg {
+    font-size: 20px;
+    font-weight: bold;
+
+  }
+  
+  .text-md {
+    font-size: 16px;
+  }
+  
+  .text-sm {
+    font-size: 14px;
+  }
+  
   
   .product-card:hover {
     box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
     transition: box-shadow 0.3s ease-in-out;
   }
+
+  .custom-button-padding {
+    padding: 0px 10px 0px 0px; 
+  }
+  

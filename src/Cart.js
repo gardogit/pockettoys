@@ -85,14 +85,19 @@ function Cart() {
   }
 
   return (
-    <Container>
+    <Container style={{ maxWidth: '980px', padding: '24px'}}>
     <h1>Carrito de compras</h1>
     {cart.line_items.map((item) => {
-      const totalPrice = (item.price.raw * quantities[item.id]).toFixed(2);
+      const totalPrice = (item.price.raw * quantities[item.id]).toLocaleString('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        minimumFractionDigits: 0,
+        useGrouping: true,
+      }).replace(".", ",");
 
       return (
-        <Row className="align-items-center my-3" key={item.id}>
-          <Col xs={2}>
+        <Row className="my-3" key={item.id} style={{ backgroundColor: '#fff', padding: '24px', borderRadius: 6 }}>
+          <Col xs={2} className="container d-flex justify-content-end">
             <Image
               src={item.image.url}
               alt={item.name}
@@ -100,38 +105,44 @@ function Cart() {
               style={{ width: '64px', height: '60px' }}
             />
           </Col>
-          <Col xs={3}>
-            <h2>{item.name}</h2>
+          <Col xs={4}>
+            <p className='text-secondary text-lg'>{item.name}</p>
             {removingItemId === item.id ? (
               <span>Eliminando producto...</span>
             ) : (
               <Button
                 variant="link"
                 onClick={() => handleRemoveFromCart(item.id)}
+                className="button p-0"
               >
                 Eliminar
               </Button>
             )}
           </Col>
-          <Col xs={3}>
-            <Button
-              variant="outline-secondary"
-              onClick={() => handleDecreaseQuantity(item.id)}
-            >
-              -
-            </Button>
-            <span className="mx-2">{quantities[item.id]}</span>
-            <Button
-              variant="outline-secondary"
-              onClick={() => handleIncreaseQuantity(item.id)}
-            >
-              +
-            </Button>
-            <p className="mt-2">Stock: {inventory[item.id]}</p>
 
+          <Col xs={3}>
+            <Col xs={8} className="border container text-center">
+              <Button
+                variant="outline-secondary"
+                onClick={() => handleDecreaseQuantity(item.id)}
+                className="border-0"
+              >
+                -
+              </Button>
+              <span className="mx-2">{quantities[item.id]}</span>
+              <Button
+                variant="outline-secondary"
+                onClick={() => handleIncreaseQuantity(item.id)}
+                className="border-0"
+              >
+                +
+              </Button>
+            </Col>
+            <p className="mt-2 container text-center">Stock: {inventory[item.id]}</p>
           </Col>
-          <Col xs={4} className="text-right">
-            <p>${totalPrice}</p>
+
+          <Col xs={3} className="container d-flex">
+            <p className='ms-auto text-secondary text-lg'>{totalPrice}</p>
           </Col>
         </Row>
       );
@@ -139,10 +150,10 @@ function Cart() {
       {cart.line_items.length === 0 && <p>No hay productos en el carrito</p>}
       <hr />
       <Row className="align-items-center">
-        <Col xs={{ span: 4, offset: 8 }} className="text-right">
-          <h2 className="text-right">
+        <Col xs={{ span: 3, offset: 9 }} className="container text-end">
+          <p className='text-lg'>
             Total: {cart.subtotal.formatted_with_symbol}
-          </h2>
+          </p>
           <Button variant="primary">Continuar compra</Button>
         </Col>
       </Row>

@@ -1,9 +1,10 @@
 //ProductDetail.js
 import React, { useContext, useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import commerce from '../commerce';
 import { CartContext } from '../CartContext';
 import { Card, Container, Row, Col, Button, Form, Image } from 'react-bootstrap';
+
 
 function ProductDetail() {
   const [product, setProduct] = useState(null);
@@ -13,6 +14,7 @@ function ProductDetail() {
   const { addToCart, fetchCart } = useContext(CartContext);
   const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -21,6 +23,9 @@ function ProductDetail() {
         setProduct(response);
         setImages(response.assets);
         setSelectedImage(response.assets[0]);
+        if (response.categories.length > 0) {
+          fetchRelatedProducts(response.categories[0].id);
+        }
       } catch (error) {
         console.error('Error fetching product:', error);
       }
@@ -28,6 +33,11 @@ function ProductDetail() {
     fetchProduct();
   }, [productId]);
 
+  const fetchRelatedProducts = async (categoryId) => {
+    const response = await commerce.products.list({ category_id: categoryId });
+    setRelatedProducts(response.data.filter((product) => product.id !== productId));
+  };
+  
   const handleAddToCart = async (productId) => {
     await addToCart(productId, quantity);
     fetchCart();
@@ -43,7 +53,8 @@ function ProductDetail() {
   }
 
   return (
-    <Container className='cont' style={{ width: '980px', padding: '24px', background: '#fff'}}>
+    <>
+    <Container style={{ width: '980px', padding: '24px', background: '#fff'}}>
       <Row>
         <Col xs={2} style={{ width: '100px'}}>
             {images.map((image) => (
@@ -113,6 +124,39 @@ function ProductDetail() {
         </Col>
       </Row>
     </Container>
+    <Container style={{ paddingTop: '24px'}}>
+    <h3>Productos similares</h3>
+    <Row>
+      {relatedProducts.length > 0 ? (
+        relatedProducts.map((product) => (
+          <Col xs={12} sm={6} md={4} lg={3} key={product.id}>
+            <Card className="product-card mb-4">
+              <Link to={`/product/${product.id}`} className="text-decoration-none">
+                <Card.Img
+                  variant="top"
+                  src={product.image.url}
+                  alt={product.name}
+                  style={{ height: '210px', objectFit: 'cover' }}
+                />
+                <hr style={{ borderTop: '1px solid #EBEBEB', margin: '0' }} />
+                <Card.Body>
+                  <Card.Title className="mb-2" style={{ fontSize: '24px', color: '#484349' }}>
+                    {product.price.formatted_with_symbol}
+                  </Card.Title>
+                  <Card.Text style={{ fontSize: '14px', color: '#484349' }}>
+                    {product.name}
+                  </Card.Text>
+                </Card.Body>
+              </Link>
+            </Card>
+          </Col>
+        ))
+      ) : (
+        <p>Cargando productos similares...</p>
+      )}
+    </Row>
+  </Container>
+  </>
   );
 }
 

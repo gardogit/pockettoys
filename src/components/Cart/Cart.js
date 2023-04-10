@@ -1,8 +1,9 @@
 //Cart.js
 import React, { useContext, useState, useEffect } from 'react';
-import { CartContext } from './CartContext';
-import commerce from './commerce';
+import { CartContext } from '../../contexts/CartContext';
+import commerce from '../../services/commerce';
 import { Container, Row, Col, Button, Image } from 'react-bootstrap';
+import { Link } from 'react-router-dom'; 
 
 function Cart() {
   const {
@@ -34,7 +35,6 @@ function Cart() {
       fetchInventory();
     }
   }, [cart]);
-  
 
   useEffect(() => {
     if (cart && Array.isArray(cart.line_items)) {
@@ -58,15 +58,12 @@ function Cart() {
   };
 
   const handleDecreaseQuantity = async (itemId) => {
-    if (quantities[itemId] === 1) {
-      setLoadingItemId(itemId);
-      await removeFromCart(itemId);
-    } else {
+    if (quantities[itemId] > 1) {
       const updatedQuantity = quantities[itemId] - 1;
       handleQuantityChange(itemId, updatedQuantity);
       updateCartItem(itemId, updatedQuantity);
     }
-  };
+  };  
 
   const handleIncreaseQuantity = (itemId) => {
     const updatedQuantity = quantities[itemId] + 1;
@@ -102,7 +99,7 @@ function Cart() {
               src={item.image.url}
               alt={item.name}
               roundedCircle
-              style={{ width: '64px', height: '60px' }}
+              style={{ width: '64px', height: '64px' }}
             />
           </Col>
           <Col xs={4}>
@@ -121,23 +118,39 @@ function Cart() {
           </Col>
 
           <Col xs={3}>
-            <Col xs={8} className="border container text-center">
+
+            <Col xs={6} className="border container text-center d-flex align-items-center justify-content-between">
               <Button
-                variant="outline-secondary"
+                variant="link"
                 onClick={() => handleDecreaseQuantity(item.id)}
-                className="border-0"
+                className="border-0 p-0"
+                disabled={quantities[item.id] === 1}
+                style={{
+                  textDecoration: 'none',
+                  padding: '8px 12px',
+                  color: quantities[item.id] === 1 ? 'inherit' : '#007bff',
+                  fontWeight: 'bold',
+                }}
               >
                 -
               </Button>
-              <span className="mx-2">{quantities[item.id]}</span>
+              <span className="mx-2" style={{ padding: '8px 12px' }}>{quantities[item.id]}</span>
               <Button
-                variant="outline-secondary"
+                variant="link"
                 onClick={() => handleIncreaseQuantity(item.id)}
-                className="border-0"
+                className="border-0 p-0"
+                disabled={quantities[item.id] === inventory[item.id]}
+                style={{
+                  textDecoration: 'none',
+                  padding: '8px 12px',
+                  color: quantities[item.id] === inventory[item.id] ? 'inherit' : '#007bff',
+                  fontWeight: 'bold',
+                }}
               >
                 +
               </Button>
             </Col>
+          
             <p className="mt-2 container text-center">Stock: {inventory[item.id]}</p>
           </Col>
 
@@ -154,7 +167,9 @@ function Cart() {
           <p className='text-lg'>
             Total: {cart.subtotal.formatted_with_symbol}
           </p>
-          <Button variant="primary">Continuar compra</Button>
+          <Link to="/login">
+            <Button variant="primary" style={{ whiteSpace: 'nowrap' }}>Continuar compra</Button>
+          </Link>
         </Col>
       </Row>
     </Container>

@@ -1,8 +1,8 @@
 //ProductDetail.js
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import commerce from '../commerce';
-import { CartContext } from '../CartContext';
+import commerce from '../../services/commerce';
+import { CartContext } from '../../contexts/CartContext';
 import { Card, Container, Row, Col, Button, Form, Image } from 'react-bootstrap';
 
 

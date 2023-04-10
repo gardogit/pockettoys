@@ -1,7 +1,7 @@
 // ProductList.js
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import commerce from '../commerce';
+import commerce from '../../services/commerce';
 import { Card, CardDeck, Container, Row, Col } from 'react-bootstrap';
 
 function ProductList() {

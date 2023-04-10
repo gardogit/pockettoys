@@ -1,0 +1,21 @@
+[debug] [2023-04-09T05:49:07.676Z] ----------------------------------------------------------------------
+[debug] [2023-04-09T05:49:07.679Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Gardo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2023-04-09T05:49:07.679Z] CLI Version:   11.25.3
+[debug] [2023-04-09T05:49:07.679Z] Platform:      win32
+[debug] [2023-04-09T05:49:07.679Z] Node Version:  v19.8.1
+[debug] [2023-04-09T05:49:07.679Z] Time:          Sun Apr 09 2023 01:49:07 GMT-0400 (hora estándar de Chile)
+[debug] [2023-04-09T05:49:07.680Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-04-09T05:49:07.685Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-04-09T05:49:07.685Z] > authorizing via signed-in user (edgardo.irm@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Gardo\Documents\pockettoys
+

@@ -1,6 +1,6 @@
-// PreCart
+// PreCart.js
 import React, { useContext } from 'react';
-import { CartContext } from './CartContext';
+import { CartContext } from '../../contexts/CartContext';
 import { Link } from 'react-router-dom';
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
 
@@ -15,19 +15,16 @@ function PreCart() {
   const totalPrice = cart.subtotal.formatted_with_symbol;
 
   return (
-    <Container style={{ backgroundColor: '#fff', maxWidth: '980px', padding: '24px', borderRadius: 6 }}>
+    <Container style={{ backgroundColor: '#fff', maxWidth: '850px', padding: '24px', borderRadius: 6 }}>
   <Row style={{ alignItems: 'center' }}>
     <Col xs={2}>
-      <Image src={lastAddedItem.image.url} alt={lastAddedItem.name} roundedCircle style={{ width: '64px', height: '64px' }} />
+      <Image src={lastAddedItem.image.url} alt={lastAddedItem.name} roundedCircle style={{ width: '64px', height: '64px', border: '4px solid #C6C7C8', }} />
     </Col>
-    <Col xs={3}>
+    <Col xs={4}>
       <strong>Agregaste a tu carrito</strong>
       <p>{lastAddedItem.name}</p>
     </Col>
-    <Col xs={1}>
-      <div style={{ borderLeft: '1px solid #C6C7C8', height: '100%' }}></div>
-    </Col>
-    <Col xs={3}>
+    <Col xs={4}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div>
           <p>
@@ -88,7 +85,7 @@ function PreCart() {
         </div>
       </div>
     </Col>
-    <Col xs={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+    <Col xs={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <Link to="/carrito">
         <Button variant="primary" style={{ whiteSpace: 'nowrap' }}>Ver carrito</Button>
       </Link>
